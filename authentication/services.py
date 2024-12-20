@@ -1,5 +1,16 @@
 from django.core.mail import send_mail
 from django.conf import settings
+from rest_framework_simplejwt.tokens import RefreshToken
+
+def generate_tokens_for_user(user):
+    """
+    این تابع توکن‌های دسترسی و رفرش را برای کاربر تولید می‌کند
+    """
+    refresh = RefreshToken.for_user(user)
+    return {
+        'access': str(refresh.access_token),
+        'refresh': str(refresh),
+    }
 
 def send_otp_email(user, otp):
     """

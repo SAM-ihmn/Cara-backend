@@ -98,5 +98,4 @@ class SPExpertAdmin(admin.ModelAdmin):
 class SPCarExpertAdmin(admin.ModelAdmin):
     list_display = ('id', 'SP', 'car', 'expert')
     search_fields = ('SP__name', 'car__brand', 'expert__name')
-    list_filter = ('car__tag',)
     list_per_page = 20

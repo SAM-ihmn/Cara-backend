@@ -1,4 +1,7 @@
 from rest_framework.viewsets import ModelViewSet
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
 from .models import (ServiceProvider,SPWorkTime,SPReview,SPRate,SPTag,SPCategory,Address
             ,SPWorkTime,SPImages,SPOwner,Expert,SPExpert)
 from .serializers import(ServiceProviderSerializer, ServiceProviderShortSerializer,SPWorkTimeSerializer, SPWorkTimeWritableSerializer,SPReviewSerializer,
@@ -43,6 +46,19 @@ class ServiceProviderViewSet(ModelViewSet):
     """
     queryset = ServiceProvider.objects.all()
 
+    def get_queryset(self):
+        """
+        بازگرداندن داده‌ها بر اساس پارامترهای موجود در بدنه درخواست
+        """
+        if self.request.method == 'POST':  # درخواست‌های POST/PUT/PATCH
+            category_id = self.request.data.get('category_id', None)
+        else:  # برای GET
+            category_id = self.request.data.get('category_id', None)
+
+        if category_id:
+            return ServiceProvider.objects.filter(category_id=category_id)
+        return super().get_queryset()
+
     def get_serializer_class(self):
         if self.action in ['list']:
             return ServiceProviderShortSerializer
@@ -53,12 +69,13 @@ class ServiceProviderViewSet(ModelViewSet):
             return [AllowAny()]
         return [IsAuthenticated()]
 
+
+    
 class SPWorkTimeViewSet(ModelViewSet):
     """
     ViewSet برای مدیریت زمان‌های کاری (Work Times)
     """
     serializer_class = SPWorkTimeSerializer
-    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         sp_id = self.kwargs.get('sp_id')
@@ -74,7 +91,6 @@ class SPReviewViewSet(ModelViewSet):
     ViewSet برای مدیریت نظرات (Reviews)
     """
     serializer_class = SPReviewSerializer
-    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         sp_id = self.kwargs.get('sp_id')
@@ -88,7 +104,6 @@ class SPRateViewSet(ModelViewSet):
     ViewSet برای مدیریت امتیازات (Ratings)
     """
     serializer_class = SPRateSerializer
-    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         sp_id = self.kwargs.get('sp_id')
@@ -102,7 +117,6 @@ class SPRateViewSet(ModelViewSet):
     ViewSet برای مدیریت امتیازات (Ratings)
     """
     serializer_class = SPRateSerializer
-    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         sp_id = self.kwargs.get('sp_id')
@@ -116,7 +130,6 @@ class SPTagViewSet(ModelViewSet):
     ViewSet برای مدیریت تگ‌ها
     """
     serializer_class = SPTagSerializer
-    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         sp_id = self.kwargs.get('sp_id')

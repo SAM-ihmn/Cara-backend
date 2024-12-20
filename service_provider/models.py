@@ -90,11 +90,12 @@ class SPTag(models.Model):
 
     def __str__(self):
         return f"{self.SP.name} - {self.key.name}: {self.value}"
+    
 class CarCategory(models.Model):
     name=models.CharField(max_length=200)
 
 class Car(models.Model):
-    category = models.ForeignKey(CarCategory, on_delete=models.DO_NOTHING)
+    category = models.ForeignKey(CarCategory, on_delete=models.DO_NOTHING,null=True)
     brand = models.CharField(max_length=255)
     model = models.CharField(max_length=255)
     sub_model = models.CharField(max_length=255, blank=True, null=True)
@@ -178,6 +179,7 @@ class SPRate(models.Model):
 
 class Expert(models.Model):
     name = models.CharField(max_length=255)
+    spcategory=models.ForeignKey(SPCategory,on_delete=models.CASCADE,related_name='expertise',null=True)
     icon = models.ImageField(upload_to='expert_icons/', blank=True, null=True)
 
     class Meta:
@@ -212,6 +214,15 @@ class SPCarExpert(models.Model):
 
     def __str__(self):
         return f"{self.expert.name} expertise for {self.car.brand}"
+
+class Gifts(models.Model):
+    name = models.CharField(max_length=255)
+    description = models.TextField()
+
+class SPGifts(models.Model):
+    sp_id=models.ForeignKey(ServiceProvider,on_delete=models.CASCADE)
+    gift_id=models.ForeignKey(Gifts,on_delete=models.CASCADE)
+    amout=models.FloatField()
 
 
 # class GaragePriceRange(models.Model):

@@ -1,10 +1,9 @@
 from django.urls import path
-from .views import TokenObtainPairView, TokenRefreshView,SendOTPView, VerifyOTPView,CombinedLoginView
+from .views import SignUpView, LoginView, SendOTPView, VerifyOTPView
 
-urlpatterns = [
-    path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
-    path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
-    path('otp/send/', SendOTPView.as_view(), name='send_otp'),
-    path('otp/verify/', VerifyOTPView.as_view(), name='verify_otp'),
-    path('login/', CombinedLoginView.as_view(), name='combined_login'),
+urlpatterns = urlpatterns = [
+    path('sign-up/', SignUpView.as_view(), name='sign_up'),       # مسیر ثبت‌نام
+    path('send-otp/', SendOTPView.as_view(), name='send_otp'),    # مسیر ارسال OTP
+    path('verify-otp/', VerifyOTPView.as_view(), name='verify_otp'),  # مسیر تأیید OTP
+    path('login/', LoginView.as_view(), name='login'),            # مسیر ورود
 ]

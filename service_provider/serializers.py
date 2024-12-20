@@ -3,6 +3,7 @@ from .models import (
     SPCategory, City, Address, Weekday, SPWorkTime, TagKey, SPTag, CarCategory, Car,
     ServiceProvider, SPImages, SPOwner, SPReview, SPRate, Expert, SPExpert, SPCarExpert
 )
+from django.db.models import Exists, OuterRef
 
 class SPCategorySerializer(serializers.ModelSerializer):
     class Meta:
@@ -110,7 +111,9 @@ class ServiceProviderSerializer(serializers.ModelSerializer):
             'tags',
             'images',
             'reviews',
+            'user_rate',
             'rates',
+            'user_review',
             'expertises',
             'average_rating'
         ]
@@ -120,12 +123,14 @@ class ServiceProviderSerializer(serializers.ModelSerializer):
         if rates.exists():
             return sum(rate.score for rate in rates) / rates.count()
         return None
+    
     def get_user_review(self, obj):
-        user = self.context.get('request').user
-        if user.is_authenticated:
-            review = obj.reviews.filter(user=user).first()
-            return SPReviewSerializer(review).data if review else None
-        return None
+        """
+        این متد کامنت‌ها را بر اساس وجود نمره مرتب می‌کند
+        """
+        user_rates = SPRate.objects.filter(SP=obj, user=OuterRef('user'))
+        reviews = obj.reviews.annotate(has_rate=Exists(user_rates)).order_by('-has_rate')
+        return SPReviewSerializer(reviews, many=True).data
 
     def get_user_rate(self, obj):
         user = self.context.get('request').user
@@ -137,7 +142,10 @@ class ServiceProviderSerializer(serializers.ModelSerializer):
         
 class ServiceProviderShortSerializer(serializers.ModelSerializer):
     category_name = serializers.CharField(source='category.name', read_only=True)
+    rate_count = serializers.IntegerField(source='rates.count', read_only=True)
     user_rate = serializers.SerializerMethodField()
+    tags = serializers.SerializerMethodField()
+
     class Meta:
         model = ServiceProvider
         fields = [
@@ -146,10 +154,21 @@ class ServiceProviderShortSerializer(serializers.ModelSerializer):
             'logo_image',
             'main_image',
             'category_name',
-            'rates',
+            'rate_count',
+            'user_rate', 
+            'tags', 
         ]
-    def get_average_rating(self, obj):
+
+    def get_user_rate(self, obj): 
         rates = obj.rates.all()
         if rates.exists():
             return sum(rate.score for rate in rates) / rates.count()
         return None
+
+    def get_tags(self, obj):
+        tags = obj.tags.select_related('key').all()
+        return [{
+            'key': tag.key.name,
+            'value': tag.value
+        } for tag in tags]
+

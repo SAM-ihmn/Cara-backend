@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',
     'authentication',
+    'django_extensions',
     'Popup',
     'service_provider',
     'user',
