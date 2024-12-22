@@ -1,22 +1,27 @@
 from django.contrib import admin
 from .models import (
     ServiceProvider, SPCategory, Address, SPWorkTime, SPTag, TagKey, SPImages, SPOwner,
-    SPReview, SPRate, Expert, SPExpert, SPCarExpert
+    SPReview, SPRate, Expert, SPExpert, SPCarExpert, Gifts, SPGifts,City
 )
 
 @admin.register(SPCategory)
 class SPCategoryAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name', 'icon')  
-    search_fields = ('name',)  
-    list_per_page = 20  
+    list_display = ('id', 'name', 'icon')
+    search_fields = ('name',)
+    list_per_page = 20
+
+@admin.register(City)
+class CityAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name')
+    search_fields = ('name',)
+    list_per_page = 20
 
 @admin.register(Address)
 class AddressAdmin(admin.ModelAdmin):
     list_display = ('id', 'district', 'city', 'neighbourhood', 'full_address')
     search_fields = ('district', 'city__name', 'neighbourhood', 'full_address')
-    list_filter = ('city',)  
+    list_filter = ('city',)
     list_per_page = 20
-
 
 @admin.register(ServiceProvider)
 class ServiceProviderAdmin(admin.ModelAdmin):
@@ -25,14 +30,12 @@ class ServiceProviderAdmin(admin.ModelAdmin):
     list_filter = ('category', 'location')
     list_per_page = 20
 
-
 @admin.register(SPWorkTime)
 class SPWorkTimeAdmin(admin.ModelAdmin):
     list_display = ('id', 'SP', 'weekday', 'time_start', 'time_end', 'is_active')
     search_fields = ('SP__name', 'weekday__name')
     list_filter = ('weekday', 'is_active')
     list_per_page = 20
-
 
 @admin.register(SPTag)
 class SPTagAdmin(admin.ModelAdmin):
@@ -41,20 +44,17 @@ class SPTagAdmin(admin.ModelAdmin):
     list_filter = ('key',)
     list_per_page = 20
 
-
 @admin.register(TagKey)
 class TagKeyAdmin(admin.ModelAdmin):
     list_display = ('id', 'name')
     search_fields = ('name',)
     list_per_page = 20
 
-
 @admin.register(SPImages)
 class SPImagesAdmin(admin.ModelAdmin):
     list_display = ('id', 'SP', 'image')
     search_fields = ('SP__name',)
     list_per_page = 20
-
 
 @admin.register(SPOwner)
 class SPOwnerAdmin(admin.ModelAdmin):
@@ -85,7 +85,6 @@ class ExpertAdmin(admin.ModelAdmin):
     search_fields = ('name',)
     list_per_page = 20
 
-
 @admin.register(SPExpert)
 class SPExpertAdmin(admin.ModelAdmin):
     list_display = ('id', 'SP', 'expert', 'is_active')
@@ -98,4 +97,16 @@ class SPExpertAdmin(admin.ModelAdmin):
 class SPCarExpertAdmin(admin.ModelAdmin):
     list_display = ('id', 'SP', 'car', 'expert')
     search_fields = ('SP__name', 'car__brand', 'expert__name')
+    list_per_page = 20
+
+@admin.register(Gifts)
+class GiftsAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name', 'description')
+    search_fields = ('name', 'description')
+    list_per_page = 20
+
+@admin.register(SPGifts)
+class SPGiftsAdmin(admin.ModelAdmin):
+    list_display = ('id', 'sp_id', 'gift_id', 'amount')
+    search_fields = ('sp_id__name', 'gift_id__name')
     list_per_page = 20

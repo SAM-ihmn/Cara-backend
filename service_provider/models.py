@@ -220,9 +220,16 @@ class Gifts(models.Model):
     description = models.TextField()
 
 class SPGifts(models.Model):
-    sp_id=models.ForeignKey(ServiceProvider,on_delete=models.CASCADE)
-    gift_id=models.ForeignKey(Gifts,on_delete=models.CASCADE)
-    amout=models.FloatField()
+    sp_id = models.ForeignKey(ServiceProvider, on_delete=models.CASCADE)
+    gift_id = models.ForeignKey(Gifts, on_delete=models.CASCADE)
+    amount = models.FloatField()
+
+    class Meta:
+        verbose_name = "Service Provider Gift"
+        verbose_name_plural = "Service Provider Gifts"
+
+    def __str__(self):
+        return f"{self.sp_id.name} - {self.gift_id.name}"
 
 
 # class GaragePriceRange(models.Model):
