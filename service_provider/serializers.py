@@ -54,11 +54,19 @@ class SPOwnerSerializer(serializers.ModelSerializer):
 
 
 class SPReviewSerializer(serializers.ModelSerializer):
-    username = serializers.CharField(source='user.username', read_only=True)
+    full_name = serializers.SerializerMethodField()
 
     class Meta:
         model = SPReview
-        fields = ['username', 'title', 'description', 'created_at', 'is_active']
+        fields = ['full_name', 'title', 'description', 'created_at', 'is_active']
+
+    def get_full_name(self, obj):
+        user_detail = getattr(obj.user, 'details', None)  # بررسی وجود رابطه
+        if user_detail:
+            firstname = user_detail.firstname or ""
+            lastname = user_detail.lastname or ""
+            return f"{firstname} {lastname}".strip()
+        return "Unknown User"  # در صورت عدم وجود UserDetail
 
 
 class SPRateSerializer(serializers.ModelSerializer):

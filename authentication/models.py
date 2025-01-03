@@ -7,26 +7,35 @@ import random
 
 class UserManager(BaseUserManager):
     def create_user(self, username=None, email=None, phone_number=None, password=None, **extra_fields):
-        # اگر هیچکدام از ایمیل یا شماره تلفن وجود نداشته باشد، خطا ایجاد می‌کنیم
         if not email and not phone_number:
             raise ValueError(_('The email or phone number must be set.'))
 
-        # اگر هیچ username ای ارسال نشده باشد، از ایمیل یا شماره تلفن استفاده می‌کنیم
         if not username:
             if email:
-                username = email  # اگر ایمیل داده شده، آن را به‌عنوان username می‌زنیم
+                username = email 
             elif phone_number:
-                username = phone_number  # اگر شماره تلفن داده شده، آن را به‌عنوان username می‌زنیم
+                username = phone_number 
 
         if email:
             email = self.normalize_email(email)
 
-        # ایجاد کاربر با username تنظیم شده
         user = self.model(username=username, email=email, phone_number=phone_number, **extra_fields)
         if password:
             user.set_password(password)
         user.save(using=self._db)
         return user
+
+    def create_superuser(self, username=None, email=None, phone_number=None, password=None, **extra_fields):
+        extra_fields.setdefault('is_staff', True)
+        extra_fields.setdefault('is_superuser', True)
+
+        if extra_fields.get('is_staff') is not True:
+            raise ValueError('Superuser must have is_staff=True.')
+        if extra_fields.get('is_superuser') is not True:
+            raise ValueError('Superuser must have is_superuser=True.')
+
+        return self.create_user(username, email, phone_number, password, **extra_fields)
+
 
 
 class User(AbstractBaseUser, PermissionsMixin):

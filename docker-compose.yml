@@ -1,0 +1,13 @@
+services:
+  django:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: django_app
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app  # برای همگام‌سازی کد با کانتینر
+      - ./media:/app/media  # برای مدیریت فایل‌های رسانه
+    environment:
+      DEBUG: "True"
